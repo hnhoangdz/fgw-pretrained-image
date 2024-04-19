@@ -1,0 +1,18 @@
+model:
+  root: ./models/hub
+  weight: 
+  name: vit
+  pretrained: True # fine-tune
+  loss: arcface # arcface
+dataset:
+  root: ./dataset
+  name: celeba
+hyperparams:
+  bs: 128
+  lr: 0.001
+  epochs: 5
+  optimizer: Adam
+  target_size: 224
+  image_channels: 3
+  scheduler: cosine
+  save_freq: 1
