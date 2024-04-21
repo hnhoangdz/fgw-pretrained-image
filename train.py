@@ -187,6 +187,7 @@ if __name__ == "__main__":
     model_name = model_config['name']
     model_pretrained = model_config['pretrained']
     model_loss = model_config['loss']
+    freeze_layers = model_config['freeze_layers']
 
     ### DATASET CONFIG ###
     dataset_config = config['dataset']
@@ -219,7 +220,11 @@ if __name__ == "__main__":
         model_pretrained
     )
 
-    logger, net = setup_network(model_name, image_channels, model_weight, num_classes)
+    logger, net = setup_network(model_name, 
+                                image_channels, 
+                                model_weight, 
+                                num_classes,
+                                freeze_layers)
     best_acc = run(
         net=net,
         logger=logger,
