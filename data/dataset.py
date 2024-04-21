@@ -45,7 +45,7 @@ class MyDataset(datasets.ImageFolder):
     
     def __getitem__(self, index):
         path, target = self.samples[index]
-        print('path: ', path)
+        # print('path: ', path)
         try:
             img = self.loader(path) 
             img = Image.fromarray(img)
