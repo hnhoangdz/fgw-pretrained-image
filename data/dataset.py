@@ -37,6 +37,7 @@ class DataTransform(object):
     
 class MyDataset(datasets.ImageFolder):
     def __init__(self, root, transform=None, phase='train', loader=opencv_loader):
+        print('root: ', root)
         super(MyDataset, self).__init__(root)
         self.transform = transform
         self.phase = phase
@@ -44,7 +45,7 @@ class MyDataset(datasets.ImageFolder):
     
     def __getitem__(self, index):
         path, target = self.samples[index]
-        
+        print('path: ', path)
         try:
             img = self.loader(path) 
             img = Image.fromarray(img)
@@ -54,35 +55,6 @@ class MyDataset(datasets.ImageFolder):
             print('path ', path)
             print('target ', target)
             print("errror: ", e)
-
-def split_dataset(path='/home/hoangdinhhuy/Hoang/project_fgw/emotions/fer2013/test'):
-    import glob
-    import os
-    from sklearn.model_selection import train_test_split
-    import shutil
-    class_names = os.listdir(path)
-    class_list = []
-    data_path_list = []
-    for c in class_names:
-        for img_path in glob.glob(os.path.join(path,c, "*.jpg")):
-            data_path_list.append(img_path)
-            class_list.append(c)
-    # val_paths, test_paths, val_labels, test_labels = train_test_split(data_path_list, class_list, stratify=class_list, 
-    #                                                                   test_size=0.5, random_state=42)
-    # print(len(data_path_list), len(class_list))
-    val_folder = path.replace('test', 'val')
-    if not os.path.exists(val_folder):
-        os.makedirs(val_folder)
-    for p in data_path_list:
-        name = os.path.basename(p)
-        print('path ', p)
-        if 'public' in name.lower():
-            c = p.split('/')[-2]
-            if not os.path.exists(os.path.join(val_folder,c)):
-                os.makedirs(os.path.join(val_folder, c))
-            shutil.move(p, os.path.join(val_folder,c, name))
-            print('copied')
-        print('==========================')
 
 if __name__ == "__main__":
     train_root_path = '/Data/Hoang/emotions/dataset/FERG_v1/test'

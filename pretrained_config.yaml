@@ -4,12 +4,13 @@ model:
   name: vit
   pretrained: True # fine-tune
   loss: arcface # arcface
+  freeze_layers: all
 dataset:
-  root: ./dataset
-  name: celeba
+  root: /home/hoangdh/hoangdh/research/image-pretrain/dataset/
+  name: celeba_split
 hyperparams:
   bs: 128
-  lr: 0.001
+  lr: 0.0001
   epochs: 5
   optimizer: Adam
   target_size: 224

@@ -5,19 +5,20 @@ import torch.nn as nn
 class Model(nn.Module):
     def __init__(self, 
                  in_channels=3, 
-                 num_classes=7):
+                 num_classes=7,
+                 *args, **kwargs):
         
         super(Model, self).__init__()
         self.model = vit_l_32(weights=ViT_L_32_Weights.DEFAULT)
-        print("in: ", in_channels)
-        print("self.model.conv_proj.in_channels: ", self.model.conv_proj.in_channels)
         if in_channels != self.model.conv_proj.in_channels:
-            print("123123")
             self.model.conv_proj = nn.Conv2d(
                 in_channels, 1024, 
                 kernel_size=(32, 32), 
                 stride=(32, 32)
             )
+        if kwargs['freeze_layers'] == 'all':
+            for param in self.model.parameters():
+                param.requires_grad = False
         self.model.heads.head = nn.Linear(
             in_features=1024,
             out_features=num_classes,
