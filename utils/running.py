@@ -58,18 +58,18 @@ def evaluate(net, dataloader, criterion, target_names, desc="Evaluating"):
             
             y_pred = net(x)
 
-            loss = criterion(y_pred, y)
-
             top_pred, acc = calculate_accuracy(y_pred, y)
             outputs.extend(top_pred.cpu().int().numpy())
 
-            epoch_loss += loss.item()
-            epoch_acc += acc.item()
+            if criterion is not None:
+                loss = criterion(y_pred, y)
+                epoch_loss += loss.item()
+                epoch_acc += acc.item()
             
     f1 = f1_score(targets, outputs, average="macro")
     
     if desc == "Testing":
         print(classification_report(targets, outputs, target_names=target_names))
-        return 1
+        return epoch_loss / len(dataloader), epoch_acc / len(dataloader), f1
     
     return epoch_loss / len(dataloader), epoch_acc / len(dataloader), f1

@@ -36,10 +36,9 @@ def init_weights(layer):
         nn.init.constant_(layer.weight, 1)
         nn.init.constant_(layer.bias, 0)
 
-def load_model(model_path, model):
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+def load_model(model_path, model, device):
     checkpoint = torch.load(model_path, map_location=device)
-    model.load_state_dict(checkpoint['params'], strict=False)
+    model.load_state_dict(checkpoint['model_state_dict'])
     return model
 
 def calculate_accuracy(y_pred, y):
