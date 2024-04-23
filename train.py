@@ -155,7 +155,13 @@ def run(net,
                 best_acc = acc_val
                 save(net, logger, model_save_dir, optimizer, scheduler, epoch, criterion, "best")
             logger.save_plt(model_save_dir)
-        
+            
+        if 'test' in phases:
+            loss_test, acc_test, f1_test = evaluate(net, test_dataloader, criterion, target_names)
+            logger.loss_test.append(loss_test)
+            logger.acc_test.append(acc_test)
+            print(f'\ttest loss: {loss_test:.3f} | test acc: {acc_test*100:.2f}% | test F1: {f1_test*100:.2f}%')
+
         # save checkpoint (frequency)
         if epoch > 0 and epoch % save_freq == 0:
             save(net, logger, model_save_dir, optimizer, scheduler, epoch, criterion, "last" + str(save_freq))
