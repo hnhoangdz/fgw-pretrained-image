@@ -13,10 +13,16 @@ def setup_network(network,
                   in_channels, 
                   model_weight=None,
                   num_classes=7, 
-                  freeze_layers='all'):
+                  freeze_layers='all',
+                  feature_extractor_name='q',
+                  ft_name='fgw'):
     
     print('model: ', network)
-    net = nets[network](in_channels=in_channels, num_classes=num_classes, freeze_layers=freeze_layers)
+    net = nets[network](in_channels=in_channels, 
+                        num_classes=num_classes, 
+                        freeze_layers=freeze_layers,
+                        feature_extractor_name=feature_extractor_name,
+                        ft_name=ft_name)
     # Prepare logger
     logger = Logger()
     if model_weight is None:
