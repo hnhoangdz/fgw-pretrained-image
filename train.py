@@ -130,7 +130,14 @@ def run(net,
         test_dataloader = data_loaders['test']
     net = net.to(device)
     
-    best_acc = 0.0
+    best_train_acc = -1
+    best_train_loss = 9999
+    
+    best_val_acc = -1
+    best_val_loss = 9999
+    
+    best_test_acc = -1
+    best_test_loss = 9999
     
     for epoch in trange(num_epochs, desc="Epochs"):
         start_time = time.monotonic()
@@ -151,31 +158,47 @@ def run(net,
             epoch_mins, epoch_secs = epoch_time(start_time, end_time)
             
             # save best checkpoint
-            if acc_val > best_acc:
-                best_acc = acc_val
-                save(net, logger, model_save_dir, optimizer, scheduler, epoch, criterion, "best")
+            if acc_val > best_val_acc:
+                best_val_acc = acc_val
+                save(net.model, logger, model_save_dir, optimizer, scheduler, epoch, criterion, "best")
             logger.save_plt(model_save_dir)
-            
         if 'test' in phases:
-            loss_test, acc_test, f1_test = evaluate(net, test_dataloader, criterion, target_names)
-            logger.loss_test.append(loss_test)
-            logger.acc_test.append(acc_test)
-            print(f'\ttest loss: {loss_test:.3f} | test acc: {acc_test*100:.2f}% | test F1: {f1_test*100:.2f}%')
+            loss_test, acc_test, f1_test = evaluate(net, test_dataloader, criterion, target_names)    
 
         # save checkpoint (frequency)
         if epoch > 0 and epoch % save_freq == 0:
-            save(net, logger, model_save_dir, optimizer, scheduler, epoch, criterion, "last" + str(save_freq))
+            save(net.model, logger, model_save_dir, optimizer, scheduler, epoch, criterion, "last" + str(save_freq))
         logger.save_plt(model_save_dir)
             
         print(f'epoch: {epoch+1:02} | epoch time: {epoch_mins}m {epoch_secs}s')
-        print(f'\ttrain loss: {loss_train:.3f} | train acc: {acc_train*100:.2f}% | train F1: {f1_train*100:.2f}%')
+        print(f'\t train loss: {loss_train:.3f} | train acc: {acc_train*100:.2f}% | train F1: {f1_train*100:.2f}%')
         if 'val' in phases:
             print(f'\t val loss: {loss_val:.3f} |  val acc: {acc_val*100:.2f}% | val F1: {f1_val*100:.2f}%')
+        if 'test' in phases:
+            print(f'\t test loss: {loss_test:.3f} | test acc: {acc_test*100:.2f}% | test F1: {f1_test*100:.2f}%')
+            
+        best_train_acc = max(best_train_acc, acc_train)
+        best_train_loss = min(best_train_loss, loss_train)
+        
+        best_val_acc = max(best_val_acc, acc_val)
+        best_val_loss = min(best_val_loss, loss_val)
+        
+        best_test_acc = max(best_test_acc, acc_test)
+        best_test_loss = min(best_test_loss, loss_test)
 
     if 'test' in phases:       
         _ = evaluate(net, test_dataloader, criterion, "Testing")
-
-    return best_acc
+    print('=============**********=============')
+    print('=============EVALUATION=============')
+    print("train")
+    print(f'\t acc: {best_train_acc} | loss: {best_train_loss}')
+    
+    print("val")
+    print(f'\t acc: {best_val_acc} | loss: {best_val_loss}')
+    
+    print("test")
+    print(f'\t acc: {best_test_acc} | loss: {best_test_loss}')
+    # return best_acc
   
 if __name__ == "__main__":
     import yaml
@@ -230,8 +253,11 @@ if __name__ == "__main__":
                                 image_channels, 
                                 model_weight, 
                                 num_classes,
-                                freeze_layers)
-    best_acc = run(
+                                freeze_layers,
+                                feature_extractor_name='layer2.0.conv1',
+                                ft_name='fgw')
+    # exit()
+    run(
         net=net,
         logger=logger,
         model_weight=model_weight,
