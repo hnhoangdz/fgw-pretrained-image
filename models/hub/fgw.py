@@ -27,19 +27,24 @@ class SeparableConv2d(nn.Module):
         return out
     
 class Block(nn.Module):
-    def __init__(self, in_channels, out_channels):
+    def __init__(self, in_channels, out_channels, keep_dim=False):
         super(Block, self).__init__()
         
+        self.keep_dim = keep_dim
+        stride_sep_conv2 = 2
+        if keep_dim:
+            stride_sep_conv2 = 1
         self.conv = conv3x3(in_channels, out_channels, kernel_size=1, stride=1, padding=0)
         self.sep_conv1 = SeparableConv2d(in_channels, out_channels, kernel_size=3, bias=False, padding=1)
-        self.sep_conv2 = SeparableConv2d(out_channels, out_channels, kernel_size=3, stride=2, bias=False, padding=1)
+        self.sep_conv2 = SeparableConv2d(out_channels, out_channels, kernel_size=3, stride=stride_sep_conv2, bias=False, padding=1)
         self.cbam = CBAM(out_channels)
         self.maxp = nn.MaxPool2d(kernel_size=2, stride=2)
         self.relu = nn.ReLU(inplace=True)
     
     def forward(self, x):
         residual = self.conv(x)
-        residual = self.maxp(residual)
+        if not self.keep_dim:
+            residual = self.maxp(residual)
         
         out = self.sep_conv1(x)
         out = self.sep_conv2(out)
@@ -47,6 +52,7 @@ class Block(nn.Module):
         out += residual 
         # out = self.relu(out)
         return out
+# class 
     
 class Model(nn.Module):
     def __init__(self, in_channels=1, num_classes=7):
@@ -117,4 +123,4 @@ if __name__ == "__main__":
         t.append(time.time() - t0)
     t = np.array(t)
     print('time inference: ', np.mean(t))
-    print('delay time: ', np.std(t))
+   

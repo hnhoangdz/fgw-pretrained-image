@@ -37,7 +37,6 @@ class Model(nn.Module):
                 return_nodes = {self.extract_layer_name: 'feature_extractor'}
             self.feature_extractor = create_feature_extractor(resnet, return_nodes=return_nodes)
             last_layer = list(self.feature_extractor.modules())[-1]
-            # print(self.count_parameters(self.feature_extractor))
             if isinstance(last_layer, nn.Conv2d):
                 self.last_out_channels = last_layer.out_channels # 256
             elif isinstance(last_layer, nn.AdaptiveAvgPool2d):
@@ -100,7 +99,7 @@ class Model(nn.Module):
     def forward(self, x):
         with torch.no_grad():
             out = self.feature_extractor(x)['feature_extractor']
-        print(out.shape)
+        #print(out.shape)
         out = self.model(out)
         return out
     
