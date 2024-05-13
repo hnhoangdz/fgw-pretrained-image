@@ -1,19 +1,20 @@
 model:
   root: ./models/hub
   weight: 
-  name: vit
+  name: resnet
   pretrained: True # fine-tune
-  loss: arcface # arcface
+  loss:
   freeze_layers: all
 dataset:
-  root: /home/hoangdh/hoangdh/research/image-pretrain/dataset/
-  name: celeba_split
+  root: /mnt/HDD/hoangdh/dataset
+  name: fer_plus_v2
 hyperparams:
-  bs: 128
-  lr: 0.0001
-  epochs: 5
+  bs: 256
+  lr: 0.001
+  epochs: 500
   optimizer: Adam
   target_size: 224
   image_channels: 3
   scheduler: cosine
-  save_freq: 1
+  save_freq: 50
+
