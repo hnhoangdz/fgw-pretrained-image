@@ -6,7 +6,7 @@ model:
   loss:
   freeze_layers: all
 dataset:
-  root: /mnt/HDD/hoangdh/dataset
+  root: /content/drive/MyDrive
   name: fer_plus_v2
 hyperparams:
   bs: 256
