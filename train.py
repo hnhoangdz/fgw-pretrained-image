@@ -254,6 +254,8 @@ if __name__ == "__main__":
                                 model_weight, 
                                 num_classes,
                                 freeze_layers,
+                                weight_vggface2='path',
+                                pt='imagenet',
                                 feature_extractor_name='layer2.0.conv1',
                                 ft_name='fgw')
     # exit()

@@ -13,6 +13,8 @@ def setup_network(network,
                   in_channels, 
                   model_weight=None,
                   num_classes=7, 
+                  weight_vggface2='path',
+                  pt='imagenet',
                   freeze_layers='all',
                   feature_extractor_name='q',
                   ft_name='fgw'):
@@ -20,6 +22,8 @@ def setup_network(network,
     print('model: ', network)
     net = nets[network](in_channels=in_channels, 
                         num_classes=num_classes, 
+                        weight_vggface2=weight_vggface2,
+                        pt=pt,
                         freeze_layers=freeze_layers,
                         feature_extractor_name=feature_extractor_name,
                         ft_name=ft_name)
