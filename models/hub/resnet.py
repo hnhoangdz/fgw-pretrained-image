@@ -5,6 +5,7 @@ from torchvision.models.feature_extraction import create_feature_extractor, get_
 
 from .fgw import Block, conv3x3
 from .mobilenetv2 import MobileNetV2
+from .resnet50 import resnet50, load_state_dict
 
 class Model(nn.Module):
     def __init__(self, 
@@ -13,8 +14,12 @@ class Model(nn.Module):
                  *args, **kwargs):
         
         super(Model, self).__init__()
-        
-        resnet = resnet50(weights=ResNet50_Weights.DEFAULT)
+        weight_pt = kwargs['weight_vggface2']
+        if kwargs['pt'] == 'imagenet' or weight_pt == None:
+          resnet = resnet50(weights=ResNet50_Weights.DEFAULT)
+        elif kwargs['pt'] == 'vggface2':
+          resnet = resnet50(num_classes=8631, include_top=True)
+          load_state_dict(resnet, weight_pt)
         if in_channels != resnet.conv1.in_channels:
             resnet.conv1 = nn.Conv2d(
                 in_channels, 64, 
@@ -31,15 +36,17 @@ class Model(nn.Module):
         ## get feature extractor
         self.extract_layer_name = kwargs['feature_extractor_name']
         if self.extract_layer_name:
+            print(1123)
             if kwargs['ft_name'] == 'linear':
                 return_nodes = {'avgpool': 'feature_extractor'}
+                print("last_layer: ", 'avg')
             else:
                 return_nodes = {self.extract_layer_name: 'feature_extractor'}
             self.feature_extractor = create_feature_extractor(resnet, return_nodes=return_nodes)
             last_layer = list(self.feature_extractor.modules())[-1]
             if isinstance(last_layer, nn.Conv2d):
                 self.last_out_channels = last_layer.out_channels # 256
-            elif isinstance(last_layer, nn.AdaptiveAvgPool2d):
+            elif isinstance(last_layer, nn.AdaptiveAvgPool2d) or isinstance(last_layer, nn.AvgPool2d):
                 self.last_out_channels = 2048
             
         if kwargs['ft_name'] == 'fgw':
