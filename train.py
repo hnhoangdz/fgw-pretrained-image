@@ -253,11 +253,11 @@ if __name__ == "__main__":
                                 image_channels, 
                                 model_weight, 
                                 num_classes,
-                                freeze_layers,
-                                weight_vggface2='path',
-                                pt='imagenet',
+                                freeze_layers='all',
+                                weight_vggface2='/content/resnet50_ft_weight.pkl',
+                                pt='vggface2',
                                 feature_extractor_name='layer2.0.conv1',
-                                ft_name='fgw')
+                                ft_name='linear')
     # exit()
     run(
         net=net,
