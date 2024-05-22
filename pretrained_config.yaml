@@ -6,7 +6,7 @@ model:
   loss:
   freeze_layers: all
 dataset:
-  root: /content/drive/MyDrive
+  root: /kaggle/working/
   name: fer_plus_v2
 hyperparams:
   bs: 256
