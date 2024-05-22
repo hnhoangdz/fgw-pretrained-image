@@ -7,7 +7,7 @@ model:
   freeze_layers: all
 dataset:
   root: /kaggle/working/
-  name: fer_plus_v2
+  name: fer2013
 hyperparams:
   bs: 256
   lr: 0.001
